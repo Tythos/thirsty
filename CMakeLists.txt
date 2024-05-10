@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-project(sdl-glew-cmake)
+project(thirsty)
 add_executable(${PROJECT_NAME}
     "main.cpp"
 )
