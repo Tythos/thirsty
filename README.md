@@ -68,6 +68,8 @@ Based on the above primitives, we need to implement specifications for:
 
 - [ ] Scene
 
+- [ ] Camera
+
 - [ ] Sprite Node
 
 - [ ] Transform
@@ -80,11 +82,13 @@ Based on the above primitives, we need to implement specifications for:
 
 - [ ] Shader
 
+For now, binding these top-level models within an `App` singleton is acceptible.
+
 We will also need metabehaviors for:
 
 * Event pub/sub
 
-* Input device bindings
+* Input device bindings (keyboard only, mouse later)
 
 * Adjudication (if multiple updates are needed)
 
@@ -103,6 +107,12 @@ This also effectively manages the graphics buffer, window context, GL configurat
 ### Scene
 
 This is a property of the top-level application that is just a pointer to a single sprite node.
+
+### Camera
+
+Primarily a point and bindings to specific GL parameters for projection/orthographic specification.
+
+The camera is defined almost exclusively as a means to define the in-world scene pass (as opposed to UI) context.
 
 ### Sprite Node
 

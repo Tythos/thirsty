@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 project(thirsty)
 add_executable(${PROJECT_NAME}
+    "Application.cpp"
     "main.cpp"
 )
 
