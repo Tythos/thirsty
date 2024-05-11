@@ -7,6 +7,8 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <string>
+#include <cstring>
 #include <vector>
 #include <SDL.h>
 #include <GL/glew.h>
@@ -23,9 +25,10 @@ namespace thirsty {
         GLuint vert_shader = 0;
         GLuint frag_shader = 0;
         GLuint shader_prog = 0;
-    };
-
-    struct Renderer {
+        std::vector<GLfloat> verts;
+        std::vector<GLint> indices;
+        SDL_Surface* logo_rgba;
+        bool is_running = false;
     };
 
     struct Scene {
@@ -53,14 +56,17 @@ namespace thirsty {
     };
 
     void newApplication(Application* app);
-
-    // void freeApplication(Application* app);
-
     void newShaders(Application* app);
-
     void newGeometries(Application* app);
-
     void newMaterials(Application* app);
 
-    // void renderLoop(Application* app);
+    void freeMaterials(Application* app);
+    void freeGeometries(Application* app);
+    void freeShaders(Application* app);
+    void freeApplication(Application* app);
+
+    void loopRender(Application* app);
+    void loopEvent(Application* app);
+
+    const char* getSource(const char* path);
 }
