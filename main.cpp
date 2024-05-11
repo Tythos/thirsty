@@ -2,13 +2,7 @@
  * main.cpp
  */
 
-#include <fstream>
 #include <iostream>
-#include <sstream>
-#include <vector>
-#include <SDL.h>
-#include <GL/glew.h>
-#include <SDL_image.h>
 #include "thirsty.hpp"
 
 int main(int nArgs, char** vArgs) {
