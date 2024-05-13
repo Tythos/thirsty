@@ -5,42 +5,15 @@
 #include "thirsty.hpp"
 
 void thirsty::newApplication(Application* app) {
-    // initialize SDL w/ video
+    // we manage SDL initialization at the application level so we can subsequently organize threading, mixing, etc. as well as video
     if (SDL_Init(SDL_INIT_VIDEO)) {
         std::cerr << "Initializing SDL video failed!" << std::endl;
         throw std::exception();
     }
 
-    // create window
-    app->window = SDL_CreateWindow("Application", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_OPENGL);
-    if (app->window == NULL) {
-        std::cerr << "Creating main window failed!" << std::endl;
-        SDL_Quit();
-        throw std::exception();
-    }
-
-    // initialize GL context
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    app->context = SDL_GL_CreateContext(app->window);
-    if (app->context == NULL) {
-        std::cerr << "Creating GL context failed!" << std::endl;
-        SDL_DestroyWindow(app->window);
-        SDL_Quit();
-        throw std::exception();
-    }
-
-    // initialize glew
-    GLenum err = glewInit();
-    if (err != GLEW_OK) {
-        std::cerr << "Initializing GLEW failed!" << std::endl;
-        SDL_GL_DeleteContext(app->context);
-        SDL_DestroyWindow(app->window);
-        SDL_Quit();
-        throw std::exception();
-    }
+    // remaining initializations are now managed by renderer
+    app->renderer = new thirsty::Renderer();
+    thirsty::newRenderer(app->renderer);
 }
 
 void thirsty::freeMaterials(Application* app) {
@@ -66,8 +39,7 @@ void thirsty::freeShaders(Application* app) {
 }
 
 void thirsty::freeApplication(Application* app) {
-    SDL_GL_DeleteContext(app->context);
-    SDL_DestroyWindow(app->window);
+    thirsty::freeRenderer(app->renderer);
     SDL_Quit();
 }
 
@@ -182,10 +154,7 @@ void thirsty::newMaterials(Application* app) {
 }
 
 void thirsty::loopRender(Application* app) {
-    glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
-    SDL_GL_SwapWindow(app->window);
+    thirsty::render(app->renderer, app->scene, app->camera);
 }
 
 void thirsty::loopEvent(Application* app) {
