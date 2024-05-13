@@ -42,7 +42,7 @@ void thirsty::freeRenderer(thirsty::Renderer* renderer) {
     SDL_DestroyWindow(renderer->window);
 }
 
-void thirsty::render(thirsty::Renderer* renderer, thirsty::Scene* scene, thirsty::Camera* camera) {
+void thirsty::render(thirsty::Renderer* renderer, thirsty::Node* scene, thirsty::Node* camera) {
     glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);

@@ -17,9 +17,7 @@
 namespace thirsty {
     struct Application;
     struct Renderer;
-    struct Scene;
-    struct Camera;
-    struct SpriteNode;
+    struct Node;
     struct Transform;
     struct Geometry;
     struct Material;
@@ -28,8 +26,8 @@ namespace thirsty {
     
     struct Application {
         Renderer* renderer = NULL;
-        Scene* scene = NULL;
-        Camera* camera = NULL;
+        Node* scene = NULL;
+        Node* camera = NULL;
         GLuint vao = 0;
         GLuint vbo = 0;
         GLuint ebo = 0;
@@ -48,13 +46,10 @@ namespace thirsty {
         SDL_GLContext context = 0;
     };
 
-    struct Scene {
-    };
-
-    struct Camera {
-    };
-
-    struct SpriteNode {
+    struct Node {
+        Transform* transform;
+        Geometry* geometry;
+        Material* material;
     };
 
     struct Transform {
@@ -86,7 +81,7 @@ namespace thirsty {
 
     void loopRender(Application* app);
     void loopEvent(Application* app);
-    void render(Renderer* renderer, Scene* scene, Camera* camera);
+    void render(Renderer* renderer, Node* scene, Node* camera);
 
     const char* getSource(const char* path);
 }
