@@ -2,21 +2,30 @@ cmake_minimum_required(VERSION 3.14)
 project(thirsty)
 add_executable(${PROJECT_NAME}
     "Application.cpp"
+    "Geometry.cpp"
+    "Material.cpp"
+    "Node.cpp"
     "Renderer.cpp"
+    "Shader.cpp"
+    "Texture.cpp"
+    "Transform.cpp"
     "main.cpp"
 )
 
 # assert depdendency options
 set(SDL2IMAGE_VENDORED OFF)
+set(GLM_BUILD_LIBRARY ON)
 
 # ensure dependencies are built
 add_subdirectory("glew-cmake/")
+add_subdirectory("glm/")
 add_subdirectory("SDL/")
 add_subdirectory("SDL_image/")
 
 # ensure dependency includes work
 target_include_directories(${PROJECT_NAME} PRIVATE
     "glew-cmake/include/"
+    "glm/"
     "SDL/include/"
     "SDL_image/include/"
 )

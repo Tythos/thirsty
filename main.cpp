@@ -10,9 +10,6 @@ int main(int nArgs, char** vArgs) {
     std::cout << "Initializing..." << std::endl;
     thirsty::Application* app = new thirsty::Application();
     thirsty::newApplication(app);
-    thirsty::newShaders(app);
-    thirsty::newGeometries(app);
-    thirsty::newMaterials(app);
 
     // main loop
     std::cout << "Running..." << std::endl;
@@ -24,9 +21,6 @@ int main(int nArgs, char** vArgs) {
 
     // cleanup
     std::cout << "Exiting..." << std::endl;
-    thirsty::freeMaterials(app);
-    thirsty::freeGeometries(app);
-    thirsty::freeShaders(app);
     thirsty::freeApplication(app);
     return 0;
 }

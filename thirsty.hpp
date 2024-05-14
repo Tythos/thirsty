@@ -12,6 +12,7 @@
 #include <vector>
 #include <SDL.h>
 #include <GL/glew.h>
+#include <glm/glm.hpp>
 #include <SDL_image.h>
 
 namespace thirsty {
@@ -28,6 +29,15 @@ namespace thirsty {
         Renderer* renderer = NULL;
         Node* scene = NULL;
         Node* camera = NULL;
+        bool is_running;
+    };
+
+    struct Renderer {
+        SDL_Window* window = NULL;
+        SDL_GLContext context = 0;
+    };
+
+    struct Node {
         GLuint vao = 0;
         GLuint vbo = 0;
         GLuint ebo = 0;
@@ -38,50 +48,46 @@ namespace thirsty {
         std::vector<GLfloat> verts;
         std::vector<GLint> indices;
         SDL_Surface* logo_rgba;
-        bool is_running = false;
-    };
-
-    struct Renderer {
-        SDL_Window* window = NULL;
-        SDL_GLContext context = 0;
-    };
-
-    struct Node {
-        Transform* transform;
-        Geometry* geometry;
-        Material* material;
     };
 
     struct Transform {
+        glm::mat4 M;
     };
 
     struct Geometry {
+        // vertex format
+        // vertex buffer
+        // index buffer
     };
 
     struct Material {
+        // texture, shader, and uniform hooks
     };
 
     struct Texture {
+        // SDL surface
     };
     
     struct Shader {
+        // encapsulation of vertex & fragment shaders, compiled into a specific program
     };
 
     void newApplication(Application* app);
+    void newGeometries(Node* app);
+    void newMaterials(Node* app);
+    void newNode(Node* node);
     void newRenderer(Renderer* renderer);
-    void newShaders(Application* app);
-    void newGeometries(Application* app);
-    void newMaterials(Application* app);
+    void newShaders(Node* app);
 
-    void freeMaterials(Application* app);
-    void freeRenderer(Renderer* renderer);
-    void freeGeometries(Application* app);
-    void freeShaders(Application* app);
     void freeApplication(Application* app);
+    void freeGeometries(Node* app);
+    void freeMaterials(Node* app);
+    void freeNode(Node* node);
+    void freeRenderer(Renderer* renderer);
+    void freeShaders(Node* app);
 
     void loopRender(Application* app);
     void loopEvent(Application* app);
     void render(Renderer* renderer, Node* scene, Node* camera);
-
     const char* getSource(const char* path);
 }
