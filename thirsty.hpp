@@ -17,13 +17,11 @@
 
 namespace thirsty {
     struct Application;
-    struct Renderer;
-    struct Node;
-    struct Transform;
     struct Geometry;
     struct Material;
-    struct Texture;
-    struct Shader;
+    struct Node;
+    struct Renderer;
+    struct Transform;
     
     struct Application {
         Renderer* renderer = NULL;
@@ -32,59 +30,47 @@ namespace thirsty {
         bool is_running;
     };
 
-    struct Renderer {
-        SDL_Window* window = NULL;
-        SDL_GLContext context = 0;
-    };
-
-    struct Node {
+    struct Geometry {
+        std::vector<GLfloat> verts;
+        std::vector<GLint> indices;
         GLuint vao = 0;
         GLuint vbo = 0;
         GLuint ebo = 0;
+    };
+
+    struct Material {
+        SDL_Surface* texture;
         GLuint tex = 0;
         GLuint vert_shader = 0;
         GLuint frag_shader = 0;
         GLuint shader_prog = 0;
-        std::vector<GLfloat> verts;
-        std::vector<GLint> indices;
-        SDL_Surface* logo_rgba;
+    };
+
+    struct Node {
+        Geometry* geometry = NULL;
+        Material* material = NULL;
+    };
+
+    struct Renderer {
+        SDL_Window* window = NULL;
+        SDL_GLContext context = 0;
     };
 
     struct Transform {
         glm::mat4 M;
     };
 
-    struct Geometry {
-        // vertex format
-        // vertex buffer
-        // index buffer
-    };
-
-    struct Material {
-        // texture, shader, and uniform hooks
-    };
-
-    struct Texture {
-        // SDL surface
-    };
-    
-    struct Shader {
-        // encapsulation of vertex & fragment shaders, compiled into a specific program
-    };
-
     void newApplication(Application* app);
-    void newGeometries(Node* app);
-    void newMaterials(Node* app);
+    void newGeometry(Geometry* geometry);
+    void newMaterial(Material* material);
     void newNode(Node* node);
     void newRenderer(Renderer* renderer);
-    void newShaders(Node* app);
 
     void freeApplication(Application* app);
-    void freeGeometries(Node* app);
-    void freeMaterials(Node* app);
+    void freeGeometry(Geometry* geometry);
+    void freeMaterial(Material* material);
     void freeNode(Node* node);
     void freeRenderer(Renderer* renderer);
-    void freeShaders(Node* app);
 
     void loopRender(Application* app);
     void loopEvent(Application* app);
