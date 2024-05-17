@@ -6,7 +6,6 @@ add_executable(${PROJECT_NAME}
     "Material.cpp"
     "Node.cpp"
     "Renderer.cpp"
-    "Transform.cpp"
     "main.cpp"
 )
 

@@ -1,11 +1,11 @@
 /**
  * basic.f.glsl
  */
- 
+
 varying vec2 vUV;
-out vec4 oRGBA;
 uniform sampler2D uTexture;
+out vec4 glFragColor;
 
 void main() {
-    oRGBA = texture(uTexture, vUV);
+    glFragColor = texture(uTexture, vUV);
 }

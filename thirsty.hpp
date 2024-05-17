@@ -6,13 +6,16 @@
 
 #include <fstream>
 #include <iostream>
+#include <deque>
 #include <sstream>
 #include <string>
 #include <cstring>
 #include <vector>
+#include <stack>
 #include <SDL.h>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
+#include <glm/ext.hpp>
 #include <SDL_image.h>
 
 namespace thirsty {
@@ -21,7 +24,6 @@ namespace thirsty {
     struct Material;
     struct Node;
     struct Renderer;
-    struct Transform;
     
     struct Application {
         Renderer* renderer = NULL;
@@ -39,7 +41,7 @@ namespace thirsty {
     };
 
     struct Material {
-        SDL_Surface* texture;
+        SDL_Surface* texture = NULL;
         GLuint tex = 0;
         GLuint vert_shader = 0;
         GLuint frag_shader = 0;
@@ -47,17 +49,20 @@ namespace thirsty {
     };
 
     struct Node {
+        glm::mat4x4 transform = {
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1
+        };
         Geometry* geometry = NULL;
         Material* material = NULL;
+        std::vector<Node> children;
     };
 
     struct Renderer {
         SDL_Window* window = NULL;
         SDL_GLContext context = 0;
-    };
-
-    struct Transform {
-        glm::mat4 M;
     };
 
     void newApplication(Application* app);

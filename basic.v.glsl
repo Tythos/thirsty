@@ -1,10 +1,13 @@
 /**
  * basic.v.glsl
  */
- 
-in vec2 aXY;
-in vec2 aUV;
+
+attribute vec2 aXY;
+attribute vec2 aUV;
 varying vec2 vUV;
+uniform mat4 uModel;
+uniform mat4 uView;
+uniform mat4 uProjection;
 
 void main() {
     vUV = aUV;
