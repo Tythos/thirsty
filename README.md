@@ -64,21 +64,21 @@ Aside from a message buffer, this means that only the update/logical thread will
 
 Based on the above primitives, we need to implement specifications for:
 
-- [ ] Renderer
+- [x] Renderer
 
 - [ ] Scene
 
-- [ ] Camera
+- [x] Camera
 
-- [ ] Sprite Node
+- [x] Sprite Node
 
-- [ ] Transform
+- [x] Transform
 
-- [ ] Geometry
+- [x] Geometry
 
-- [ ] Material
+- [x] Material
 
-- [ ] Texture
+- [x] Texture
 
 - [ ] Shader
 
@@ -108,6 +108,8 @@ This also effectively manages the graphics buffer, window context, GL configurat
 
 This is a property of the top-level application that is just a pointer to a single sprite node.
 
+Currently this is just a top-level `Node*`; this is probably fine, but we'll leave the task box unchecked just in case.
+
 ### Camera
 
 Primarily a point and bindings to specific GL parameters for projection/orthographic specification.
@@ -122,6 +124,8 @@ Can be fairly abstract for now as it is strongly defined by decomposition; compo
 
 Will probably reuse as much math as possible from something like GLM. Technically a 3x3 matrix will work here, and it would be nice to avoid decomposition, but while it's inefficient we'll probably just retain a "flat" 4x4 for compatibility.
 
+Just reused `glm::mat4x4`, and it's working fine. Might be nice to have more sophisticated helpers but even those are in `glm::`. On that note, who knew `glm` was column-major!?
+
 ### Geometry
 
 Probably need to define a vertex model; this can be fixed (extensibility will be too complex) and will likely only come in two forms: a point, or a rectangle about a point.
@@ -134,8 +138,13 @@ We'll assume for now that a material consists of a texture/surface, shader progr
 
 Probably reuse SDL_Surface for now.
 
+Yup. Reused `SDL_Surface` and it's fine.
+
 ## Shader
 
 Encapsulates file-loaded vertex and fragment shader to compile/link into a specific GLSL program.
 
 Should probably support hard-coded hooked for our vertex model, as well as procedural hooks for the material to bind texture uniforms.
+
+Currently part of `Material`, debating whether it's worth pulling out when we still need to juggle vertex <-> attribute shader bindings. Will leave the task box unchecked.
+
