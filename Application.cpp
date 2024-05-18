@@ -11,6 +11,10 @@ void thirsty::newApplication(Application* app) {
         throw std::exception();
     }
 
+    // initialize default camera
+    app->camera = new Camera();
+    newCamera(app->camera);
+
     // remaining initializations are now managed by renderer
     app->renderer = new thirsty::Renderer();
     thirsty::newRenderer(app->renderer);

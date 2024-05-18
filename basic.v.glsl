@@ -11,5 +11,6 @@ uniform mat4 uProjection;
 
 void main() {
     vUV = aUV;
-    gl_Position = vec4(aXY, 0.0, 1.0);
+    mat4 pvm = uProjection * uView * uModel;
+    gl_Position = pvm * vec4(aXY, 0.0, 1.0);
 }
