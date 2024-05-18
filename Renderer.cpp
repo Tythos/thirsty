@@ -6,7 +6,7 @@
 
 void thirsty::newRenderer(thirsty::Renderer* renderer) {
     // create window
-    renderer->window = SDL_CreateWindow("Application Rendering Context", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_OPENGL);
+    renderer->window = SDL_CreateWindow("Application Rendering Context", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, renderer->width, renderer->height, SDL_WINDOW_OPENGL);
     if (renderer->window == NULL) {
         std::cerr << "Creating main window failed!" << std::endl;
         SDL_Quit();
@@ -42,58 +42,65 @@ void thirsty::freeRenderer(thirsty::Renderer* renderer) {
     SDL_DestroyWindow(renderer->window);
 }
 
-void thirsty::render(thirsty::Renderer* renderer, thirsty::Node* scene, thirsty::Node* camera) {
+void thirsty::renderNode(thirsty::Renderer* renderer, thirsty::Node* node, std::stack<glm::mat4>& matrixStack, const glm::mat4& view, const glm::mat4& projection) {
+    // update transform stack
+    glm::mat4 currentTransform = matrixStack.top();
+    glm::mat4 nodeTransform = currentTransform * node->transform;
+    matrixStack.push(nodeTransform);
+
+    if (node->isVisible && node->material != NULL && node->geometry != NULL) {
+        // et shader program
+        glUseProgram(node->material->shader_prog);
+
+        // set uniform matrix locations
+        GLint hModel = glGetUniformLocation(node->material->shader_prog, "uModel");
+        GLint hView = glGetUniformLocation(node->material->shader_prog, "uView");
+        GLint hProjection = glGetUniformLocation(node->material->shader_prog, "uProjection");
+        glUniformMatrix4fv(hModel, 1, GL_FALSE, glm::value_ptr(nodeTransform));
+        glUniformMatrix4fv(hView, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(hProjection, 1, GL_FALSE, glm::value_ptr(projection));
+
+        // bind the texture
+        if (node->material->texture) {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, node->material->tex);
+            GLint texLoc = glGetUniformLocation(node->material->shader_prog, "uTexture");
+            glUniform1i(texLoc, 0);
+        }
+
+        // bind the vertices, then draw
+        glBindVertexArray(node->geometry->vao);
+        glDrawElements(GL_TRIANGLES, (GLsizei)node->geometry->indices.size(), GL_UNSIGNED_INT, 0);
+
+        // unbind vertex array and texture; reset program
+        glBindVertexArray(0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glUseProgram(0);
+    }
+
+    // recurse to children, then pop transform
+    for (auto child : node->children) {
+        renderNode(renderer, &child, matrixStack, view, projection);
+    }
+    matrixStack.pop();
+}
+
+void thirsty::render(thirsty::Renderer* renderer, thirsty::Node* scene, thirsty::Camera* camera) {
     // initialize stacks
     std::stack<glm::mat4>* transformStack = new std::stack<glm::mat4>();
     transformStack->push(glm::mat4(1.0f));
-    std::deque<Node*> toTraverse = {scene};
     
     // clear buffers
     glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
     // set view and projection matrics
-    float fov_rad = 0.5 * M_PI;
-    float aspectRatio = 1.0;
-    float nearPlane = 0.1;
-    float farPlane = 10.0;
-    glm::vec3 cameraPos = { 0.0f, 0.0f, 1.0f };
-    glm::vec3 cameraFront = { 0.0f, 0.0f, -1.0f };
-    glm::vec3 cameraUp = { 0.0f, 1.0f, 0.0f };
-    glm::mat4 view = glm::lookAt(cameraPos, cameraFront + cameraPos, cameraUp);
-    glm::mat4 projection = glm::perspective(glm::radians(fov_rad), aspectRatio, nearPlane, farPlane);
+    camera->aspectRatio = (float)(renderer->width) / (float)(renderer->height);
+    glm::mat4 view = thirsty::getViewMatrix(camera);
+    glm::mat4 projection = thirsty::getProjectionMatrix(camera);
 
-    // start traversal
-    while (toTraverse.size() > 0) {
-        Node* currentNode = toTraverse.front();
-        toTraverse.pop_front();
-        transformStack->push(currentNode->transform);
-
-        // set shader uniforms
-        GLint hModel = glGetUniformLocation(currentNode->material->shader_prog, "model");
-        GLint hView = glGetUniformLocation(currentNode->material->shader_prog, "view");
-        GLint hProjection = glGetUniformLocation(currentNode->material->shader_prog, "projection");
-        glUniformMatrix4fv(hModel, 1, GL_FALSE, &transformStack->top()[0][0]);
-        glUniformMatrix4fv(hView, 1, GL_FALSE, &view[0][0]);
-        glUniformMatrix4fv(hProjection, 1, GL_FALSE, &projection[0][0]);
-
-        // bind node geometry
-        glBindVertexArray(currentNode->geometry->vao);
-
-        // load shader program
-        glUseProgram(currentNode->material->shader_prog);
-
-        // draw elements
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
-
-        // add children to traversal queue
-        for (auto child : currentNode->children) {
-            toTraverse.push_back(&child);
-        }
-    }
-
-    // once finished, swap
+    // begin traversal
+    renderNode(renderer, scene, *transformStack, view, projection);
     SDL_GL_SwapWindow(renderer->window);
 }

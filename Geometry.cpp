@@ -5,19 +5,9 @@
 #include "thirsty.hpp"
 
 void thirsty::newGeometry(thirsty::Geometry* geometry) {
+    // initialize and bind vertex arrays
     glGenVertexArrays(1, &(geometry->vao));
     glBindVertexArray(geometry->vao);
-
-    // populate vertices and indices data
-        geometry->verts = {
-        -1.0f, -1.0f, 0.0f, 1.0f,
-        -1.0f, 1.0f, 0.0f, 0.0f,
-        1.0f, 1.0f, 1.0f, 0.0f,
-        1.0f, -1.0f, 1.0f, 1.0f
-    };
-    geometry->indices = {
-        0, 1, 2, 0, 2, 3
-    };
 
     // populate vertex and element buffers
     glGenBuffers(1, &geometry->vbo);
